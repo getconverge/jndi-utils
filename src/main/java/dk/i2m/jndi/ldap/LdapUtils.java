@@ -126,8 +126,8 @@ public final class LdapUtils {
 
         ModificationItem mod;
 
-        if (newValue.equalsIgnoreCase("")) {
-            if (!oldValue.equalsIgnoreCase("")) {
+        if ("".equalsIgnoreCase(newValue)) {
+            if (!"".equalsIgnoreCase(oldValue)) {
                 mod = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
                         new BasicAttribute(key));
             } else {
