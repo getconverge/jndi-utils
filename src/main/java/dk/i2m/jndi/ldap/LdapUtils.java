@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Interactive Media Management
+ * Copyright (C) 2009 - 2014 Interactive Media Management
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,15 +28,17 @@ import javax.naming.directory.ModificationItem;
 
 /**
  * Static utility class for working with LDAP servers and responses through the
- * <code>javax.naming</code> classes. To obtain verbose logging for this class
- * enable the {@link Level#FINER} level.
+ * {@code javax.naming} classes. To obtain verbose logging for this class enable
+ * the {@link Level#FINER} and {@link Level#FINEST} level.
  *
  * @author <a href="mailto:allan@i2m.dk">Allan Lykke Christensen</a>
  * @since 1.1
  */
 public final class LdapUtils {
 
-    private static final Logger logger = Logger.getLogger(LdapUtils.class.getName());
+    private static final Logger LOG = Logger.getLogger(LdapUtils.class.getName());
+    private static final String LABEL_ATTRIBUTE_DID_NOT_EXIST = "Attribute did not exist";
+    private static final String LABEL_ATTRIBUTE_VALUE_COULD_NOT_BE_OBTAINED = "Attribute value could not be obtained";
 
     /**
      * Prevents creating instances of the static class.
@@ -51,10 +53,9 @@ public final class LdapUtils {
      * thrown. If an {@link Exception} occur the return value will be blank and
      * the exception will be logged as {@link Level#FINER}.
      *
-     * @param att
-     *          {@link Attribute} to validate
+     * @param att {@link Attribute} to validate
      * @return {@link String} value of the attribute or an empty {@link String}
-     *         if the attribute contained <code>null</code> or did not exist
+     * if the attribute contained <code>null</code> or did not exist
      */
     public static String validateAttribute(final Attribute att) {
         String returnValue = "";
@@ -64,10 +65,12 @@ public final class LdapUtils {
                 returnValue = att.get().toString();
             }
         } catch (NoSuchElementException e) {
-            logger.log(Level.FINER, "Attribute did not exist", e);
+            LOG.log(Level.FINER, LABEL_ATTRIBUTE_DID_NOT_EXIST);
+            LOG.log(Level.FINEST, "", e);
             returnValue = "";
         } catch (NamingException e) {
-            logger.log(Level.FINER, "Attribute value could not be obtained", e);
+            LOG.log(Level.FINER, LABEL_ATTRIBUTE_VALUE_COULD_NOT_BE_OBTAINED);
+            LOG.log(Level.FINEST, "", e);
             returnValue = "";
         }
 
@@ -80,13 +83,12 @@ public final class LdapUtils {
      * thrown. If an {@link Exception} occur the return value will be blank and
      * the exception will be logged as {@link Level#FINER}.
      *
-     * @param att
-     *          {@link Attribute} to validate
-     * @param defaultValue
-     *          Value to return if the {@link Attribute} does not exist
+     * @param att {@link Attribute} to validate
+     * @param defaultValue Value to return if the {@link Attribute} does not
+     * exist
      *
-     * @return {@link String} value of the attribute or an empty
-     *         {@link String} if the attribute contained null or did not exist.
+     * @return {@link String} value of the attribute or an empty {@link String}
+     * if the attribute contained null or did not exist.
      */
     public static String validateAttribute(final Attribute att,
             final String defaultValue) {
@@ -97,10 +99,12 @@ public final class LdapUtils {
                 returnValue = att.get().toString();
             }
         } catch (NoSuchElementException e) {
-            logger.log(Level.FINER, "Attribute did not exist", e);
+            LOG.log(Level.FINER, LABEL_ATTRIBUTE_DID_NOT_EXIST);
+            LOG.log(Level.FINEST, "", e);
             returnValue = defaultValue;
         } catch (NamingException e) {
-            logger.log(Level.FINER, "Attribute value could not be obtained", e);
+            LOG.log(Level.FINER, LABEL_ATTRIBUTE_VALUE_COULD_NOT_BE_OBTAINED);
+            LOG.log(Level.FINEST, "", e);
             returnValue = defaultValue;
         }
 
@@ -108,16 +112,13 @@ public final class LdapUtils {
     }
 
     /**
-     * Validates a modification of an attribute. The method will detemine if the
-     * attribute needs to be <code>ADDED</code>, <code>REMOVED</code> or
+     * Validates a modification of an attribute. The method will determine if
+     * the attribute needs to be <code>ADDED</code>, <code>REMOVED</code> or
      * <code>MODIFIED</code>.
      *
-     * @param key
-     *            Key of the attribute
-     * @param newValue
-     *            New value of the attribute
-     * @param oldValue
-     *            Old value of the attribute
+     * @param key Key of the attribute
+     * @param newValue New value of the attribute
+     * @param oldValue Old value of the attribute
      * @return {@link ModificationItem} for either ADD, REMOVE or MODIFY
      */
     public static ModificationItem validateModification(final String key,
